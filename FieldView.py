@@ -112,6 +112,7 @@ def clippedFOV(robot, goal, obstacles):
         return Polygon(result)
 
     for poly in obsPolys:
-        currentFOV = ray_trace(currentFOV, poly)
+        if currentFOV.intersects(poly):
+            currentFOV = ray_trace(currentFOV, poly)
 
     return currentFOV
