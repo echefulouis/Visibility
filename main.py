@@ -1,7 +1,7 @@
 from ObstaclePolygon import ObstaclePolygon
 from VisibilityRoadmap import VisibilityRoadMap
 import matplotlib.pyplot as plt
-from FieldView import sectorView
+from FieldView import sectorView, clippedFOV
 show_animation = True
 
 def main():
@@ -43,7 +43,7 @@ def main():
         if i == 0: continue
         robot = [rx[i-1], ry[i-1]]
         goal = [x, y]
-        FOV = sectorView(robot, goal)
+        FOV = clippedFOV(robot, goal, obstacles)
         plt.fill(*FOV.exterior.xy, alpha=0.4)
 
 
