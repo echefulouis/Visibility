@@ -39,12 +39,12 @@ def main():
     rx, ry = VisibilityRoadMap(expand_distance, do_plot=show_animation) \
         .planning(sx, sy, gx, gy, obstacles)
 
-    fov = FieldView(fov=30)
+    fov = FieldView(obstacles=obstacles, fov=60)
     for i, (x, y) in enumerate(zip(rx, ry)):
         if i == 0: continue
         robot = [rx[i-1], ry[i-1]]
         goal = [x, y]
-        FOV = fov.clippedFOV(robot, goal, obstacles)
+        FOV = fov.clippedFOV(robot, goal)
         plt.fill(*FOV.exterior.xy, alpha=0.4)
 
 

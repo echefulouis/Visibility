@@ -3,7 +3,8 @@ import numpy as np
 from shapely.geometry import Polygon, Point, LineString
 
 class FieldView:
-    def __init__(self, fov):
+    def __init__(self, obstacles, fov):
+        self.obstacles = obstacles
         self.fov = fov
     @staticmethod
     def sector(center, start_angle, end_angle, radius, steps=200):
@@ -76,7 +77,7 @@ class FieldView:
 
         return self.getFOV(x, y, theta, radius)
 
-    def clippedFOV(self, robot, goal, obstacles):
+    def clippedFOV(self, robot, goal):
         currentFOV = self.sectorView(robot, goal)
         # convert obstacles to polygon
         def toPolygons(obstacles):
@@ -89,7 +90,7 @@ class FieldView:
                 result.append(Polygon(points))
             return result
 
-        obsPolys = toPolygons(obstacles)
+        obsPolys = toPolygons(self.obstacles)
 
         def ray_trace(fov, poly):
             coords = fov.exterior.coords
