@@ -246,7 +246,7 @@ def draw_problem():
         plt.fill( poly_x[index], poly_y[index], color="#512DA8")
 
 
-def get_hamiltonian_path(vertex_cords_dict,adj_matrix_distance,max_sector_area_dict):
+def get_hamiltonian_path_with_path_legnth_as_weights(vertex_cords_dict,adj_matrix_distance):
     vertex_cord = list(vertex_cords_dict.values())
     vertex_node = list(vertex_cords_dict.keys())
 
@@ -257,13 +257,12 @@ def get_hamiltonian_path(vertex_cords_dict,adj_matrix_distance,max_sector_area_d
     for i in range(len(vertex_node)):
         for j in range(len(vertex_node)):
             if i !=j:
-                #F.add_edge(vertex_node[i], vertex_node[j], weight=((adj_matrix_distance[i][j] /max_sector_area_dict[vertex_node[i]])*100))
                 F.add_edge(vertex_node[i], vertex_node[j],
                            weight=((adj_matrix_distance[i][j])))
 
     hamiltonian_path = nx.approximation.traveling_salesman_problem(F,cycle=False)
     hamiltonian_path = approx.greedy_tsp(F, source=hamiltonian_path[0])
-    print(hamiltonian_path)
+    #print(hamiltonian_path)
     # Q = nx.Graph()
     # for i in hamiltonian_path:
     #     Q.add_node(i, pos=vertex_cords_dict[i])
@@ -287,7 +286,35 @@ def get_hamiltonian_path(vertex_cords_dict,adj_matrix_distance,max_sector_area_d
         hamiltonian_edge_distance[hamiltonian_path[i]]=F[hamiltonian_path[i]][hamiltonian_path[i + 1]]['weight']
         total_distance += F[hamiltonian_path[i]][hamiltonian_path[i + 1]]['weight']
 
-    return hamiltonian_path ,hamiltonian_edge_distance
+    return F.copy(),hamiltonian_path ,hamiltonian_edge_distance
+
+def get_hamiltonian_path_with_ratio_as_weights(vertex_cords_dict,adj_matrix_distance,max_sector_area_dict):
+    vertex_cord = list(vertex_cords_dict.values())
+    vertex_node = list(vertex_cords_dict.keys())
+
+    F = nx.Graph()
+    for i in range(len(vertex_node)):
+        F.add_node(vertex_node[i], pos=vertex_cord[i])
+
+    for i in range(len(vertex_node)):
+        for j in range(len(vertex_node)):
+            if i !=j:
+                F.add_edge(vertex_node[i], vertex_node[j], weight=((adj_matrix_distance[i][j] /max_sector_area_dict[vertex_node[i]])*100))
+
+
+    hamiltonian_path = nx.approximation.traveling_salesman_problem(F,cycle=False)
+    hamiltonian_path = approx.greedy_tsp(F, source=hamiltonian_path[0])
+    #print(hamiltonian_path)
+
+    total_distance = 0
+    hamiltonian_edge_distance = {}
+    for i in range(len(hamiltonian_path) - 1):
+        #print("distance from node {} to {} is {}".format(hamiltonian_path[i],hamiltonian_path[i+1],F[hamiltonian_path[i]][hamiltonian_path[i + 1]]['weight']))
+        hamiltonian_edge_distance[hamiltonian_path[i]]=F[hamiltonian_path[i]][hamiltonian_path[i + 1]]['weight']
+        total_distance += F[hamiltonian_path[i]][hamiltonian_path[i + 1]]['weight']
+
+    return F.copy(),hamiltonian_path ,hamiltonian_edge_distance
+
 
 
 def draw_hamiltonian_cycle(h_path, tsp_cord):
@@ -304,19 +331,47 @@ def draw_hamiltonian_cycle(h_path, tsp_cord):
 
     Z.add_edges_from(vertexsequence_edges)
     pos = nx.get_node_attributes(Z, 'pos')
-
-
-
-    # for i in range(len(list(Z.nodes))):
-    #     print(h_path[i], h_path[i+1])
-    # print(plot Hamiltonaina Cycle)
     nx.draw(Z, pos, with_labels=True)
     show()
+
+
+def draw_hamiltonian_circles_on_main_graph(nx_graph,nx_coords,h_path_coords,h_path,max_sec_coords):
+    for index,num in enumerate(h_path):
+        if index+1 == len(h_path):
+            pass
+        else:
+            x, y = h_path_coords[num][0],h_path_coords[num][1]
+            a, b = h_path_coords[h_path[index+1]][0], h_path_coords[h_path[index+1]][1]
+            unitA = Circle((x, y), 5, facecolor='none', fill=True, color='blue', edgecolor=(0, 0.8, 0.8), linewidth=2,
+                           alpha=0.5)
+            unitB = Circle((a, b), 5, facecolor='none', fill=True, color='magenta', edgecolor=(0, 0.8, 0.8), linewidth=2,
+                           alpha=0.5)
+            fig = figure(figsize=(18, 16))
+            ax = fig.add_subplot(111, aspect='equal', xlabel="S", ylabel="t")
+            ax.add_patch(MPolygon(max_sec_coords[num], closed=True, fill=True, color='r', linewidth=0))
+            ax.add_patch(MPolygon(LineList, closed=True, fill=False, color='black', label='line 1', linewidth=3))
+            ax.add_patch(MPolygon(hole1, closed=True, fill=True, color='gray', label='line 1', linewidth=2))
+            ax.add_patch(MPolygon(hole2, closed=True, fill=True, color='gray', label='line 1', linewidth=2))
+            ax.add_patch(MPolygon(hole3, closed=True, fill=True, color='gray', label='line 1', linewidth=2))
+
+            ax.add_patch(unitA)
+            ax.set_xlim(-2, 300)
+            ax.set_ylim(-2, 200)
+
+            nx.draw(nx_graph, nx_coords, with_labels=True)
+            # Find the shortest path between the nodes
+
+            path = nx.shortest_path(nx_graph, source=h_path[index], target=h_path[index+1])
+            path_edges = list(zip(path, path[1:]))
+
+            nx.draw(nx_graph, nx_coords,edgelist = path_edges, edge_color = 'y', width = 2.0,with_labels=True)
+            ax.add_patch(unitB)
+            show()
 
 def assign_path_to_robots(edges_dist,no_of_robots):
     #Average distance
     W = sum(list(edges_dist.values())) / no_of_robots
-    print("average distance "+str(W))
+    #print("average distance "+str(W))
 
     path_for_robot = {}
 
@@ -499,7 +554,7 @@ def get_networkx_neighbours(networkx_points,new_obstacles,num_neigbours):
     return G.copy()
 
 def create_environment():
-    global env, obs1, obs2, obs3, maxc_x, maxr_y, boundary, obstacles, source, dest, point_x_cord, point_y_cord, new_obstacles
+    global env, obs1, obs2, obs3, maxc_x, maxr_y, boundary, obstacles, source, dest, point_x_cord, point_y_cord, new_obstacles, hole1,hole2,hole3,LineList
     maxc_x = 200  # number of colmuns in x
     maxr_y = 300  # number of rows in y
     #-------------------------------------------
@@ -823,7 +878,7 @@ def create_environment():
         x = [j.x for j in i]
         y = [j.y for j in i]
         plot_polygon_decomposition(x, y)
-    print(len(point_y_cord), len(point_x_cord))
+    #print(len(point_y_cord), len(point_x_cord))
     # Dictionary for multipolygon
     m_polygons = {}
 
@@ -852,15 +907,14 @@ def main():
         visibility_polygons.update({graph_points_list.index(graph_points_list[i]): dict(directions)})
         visibility_polygons_area.update({graph_points_list.index(graph_points_list[i]): dict(directions_area)})
 
-    print(visibility_polygons,visibility_polygons_area)
+    #print(visibility_polygons,visibility_polygons_area)
 
     networkx_points = np.array([point_x_cord, point_y_cord]).T
     R=get_networkx_neighbours(networkx_points,new_obstacles,9)
-    print(R.nodes)
-    print(R.edges)
+
     print(graph_points_list)
     r=150
-    #Try 300
+    #Try
     #try 500
     for index, position in enumerate(graph_points.tolist()):
         x,y=position
@@ -933,6 +987,8 @@ def main():
             minpolyx = 1000
             minpolyy = 1000
 
+
+#--------------------Loop through the environment (free space) and explore it using the visibility---------
     free_env_space1 = Polygon(env).difference(Polygon(obs1))
     free_env_space2 = free_env_space1.difference(Polygon(obs2))
     free_env_space = free_env_space2.difference(Polygon(obs3))
@@ -944,6 +1000,7 @@ def main():
     free_space = free_env_space
     count = 0
     max_sector_visibility_polygon_area={}
+    max_sectorcoords_dict = {}
     while not free_space.is_empty:
         count = count + 1
         max_visibility_area = 0
@@ -973,11 +1030,13 @@ def main():
                     max_vertex_index = i
                 value_count = value_count + 1
         max_sector_visibility_polygon_area[max_vertex_index]=max_visibility_area
-        print(max_visibility_area, max_vertex_index) #Store the max_vis and Index in a dictionary
+
+        max_sectorcoords_dict[max_vertex_index] = max_visibilty_polygon_for_view
+        # print(max_visibility_area, max_vertex_index) #Store the max_vis and Index in a dictionary
         # print("-------",free_space.difference(max_visibilty_polygon))
-        # sectorcoords = list(max_visibilty_polygon.exterior.coords)
-        #sectorcoords = max_visibilty_polygon_for_view
-        #x,y=networkx_points.tolist()[max_vertex_index][0], networkx_points.tolist()[max_vertex_index][1]
+        # #sectorcoords = list(max_visibilty_polygon.exterior.coords)
+        # sectorcoords = max_visibilty_polygon_for_view
+        # x,y=networkx_points.tolist()[max_vertex_index][0], networkx_points.tolist()[max_vertex_index][1]
         # unitA = Circle((x, y), 5, facecolor='none', fill=True, color='blue', edgecolor=(0, 0.8, 0.8), linewidth=2,  alpha=0.5)
         # fig = figure(figsize=(18, 16))
         # ax = fig.add_subplot(111, aspect='equal', xlabel="S", ylabel="t")
@@ -990,25 +1049,26 @@ def main():
         # ax.add_patch(unitA)
         # ax.set_xlim(-2, 300)
         # ax.set_ylim(-2, 200)
-        #timestr = time.strftime("%Y%m%d-%H%M%S")
-        #pylab.savefig('output/' + timestr + 'No_' + str(l) + ".jpeg", bbox_inches='tight')
-        #show()
+        # show()
 
         #if  max_centroid_index  not in cellsequence:
         vertexsequence.append(max_vertex_index)
 
         tmp_visibility_polygons[max_vertex_index][directions_keys[max_value_count]] = []
         visibility_polygons_area[max_vertex_index][directions_keys[max_value_count]] = 0
-        # print (visibility_polygons_area)
-        print("The number of iteration is ",count)
-        print("The previous area of the free space is ", free_space.area)
+        #print (visibility_polygons_area)
+        #print("The number of iteration is ",count)
+        #print("The previous area of the free space is ", free_space.area)
         free_space= free_space.difference(max_visibilty_polygon)
-        print(free_space)
-        print("The maximum area deducted is ",max_visibility_area)
-        print("The current area of the free space is ",free_space.area)
+        #print(free_space)
+        #print("The maximum area deducted is ",max_visibility_area)
+        #print("The current area of the free space is ",free_space.area)
 
     print(vertexsequence)
 
+
+
+    #------------------------------------------Create a adjacent matrix of the shortest edge distance using main graph between two points-------------------------
     vertexsequence_cords = {}
     for i in vertexsequence:
         vertexsequence_cords[i]=tuple(graph_points.tolist()[i])
@@ -1029,24 +1089,32 @@ def main():
                     mat[i][j] =1
                     mat_dist[i][j] = path_length
 
-    ham_path, edge_distance = get_hamiltonian_path(vertexsequence_cords,mat_dist,max_sector_visibility_polygon_area)
-    draw_hamiltonian_cycle(ham_path, vertexsequence_cords)
 
-    print(edge_distance)
+    #--------------------------------------------Hamiltonianpath and edge weights--------------------
+    ham_graph1,ham_path1, edge_distance1 = get_hamiltonian_path_with_ratio_as_weights(vertexsequence_cords,mat_dist,max_sector_visibility_polygon_area)
+    draw_hamiltonian_cycle(ham_path1, vertexsequence_cords)
 
-    total_distance = get_total_path_length(edge_distance)
-    print("The total path length is ", total_distance)
+    ham_graph2,ham_path2, edge_distance2 = get_hamiltonian_path_with_path_legnth_as_weights(vertexsequence_cords, mat_dist)
+    draw_hamiltonian_cycle(ham_path2, vertexsequence_cords)
 
-    nuumber_of_robots = 4
+    print(ham_path1)
+    #draw_hamiltonian_circles_on_main_graph(R,networkx_points,vertexsequence_cords,ham_path1,max_sectorcoords_dict)
 
-    path_for_each_robot = assign_path_to_robots(edge_distance,nuumber_of_robots)
+    print(edge_distance1)
+    print(edge_distance2)
 
-    print(path_for_each_robot)
+    #total_distance = get_total_path_length(edge_distance1)
 
-    #print(max_sector_visibility_polygon_area)
-
-    #print(mat)
-    #print(mat_dist)
+    # nuumber_of_robots = 4
+    #
+    # path_for_each_robot = assign_path_to_robots(edge_distance,nuumber_of_robots)
+    #
+    # print(path_for_each_robot)
+    #
+    # #print(max_sector_visibility_polygon_area)
+    #
+    # #print(mat)
+    # #print(mat_dist)
 
 if __name__ == "__main__":
     main()
