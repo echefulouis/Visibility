@@ -85,7 +85,7 @@ def main():
             color = colors[i]
             path = interpolate_points_between(robot, goal, VMAX)
             for k, g in enumerate(path):
-                if k == 0:
+                if k == 0 or k == len(path) - 1:
                     continue
                 p = path[k-1]
                 vizData[name].append({'robot': p, 'goal':g, 'color':color})
