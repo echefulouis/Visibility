@@ -1,0 +1,14 @@
+# Vertices (replace with your coordinates)
+v 33.0 40.0 0.0
+v 44.0 94.0 0.0
+v 67.0 55.0 0.0
+v 75.0 109.0 0.0
+v 84.0 149.0 0.0
+v 128.0 97.0 0.0
+
+# Faces (define five triangles)
+f 1 2 3
+f 3 2 4
+f 3 2 4
+f 4 2 5
+f 4 5 6

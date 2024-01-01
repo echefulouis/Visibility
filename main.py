@@ -1,5 +1,4 @@
 from ObstaclePolygon import ObstaclePolygon
-from VisibilityRoadmap import VisibilityRoadMap
 import matplotlib.pyplot as plt
 from FieldView import FieldView
 import pathlib
@@ -64,12 +63,12 @@ def interpolate_points_between(start_point, goal_point, fixed_distance):
 
 def main():
     print(__file__ + " start!!")
-    result = "../result.yaml"
-    xy_coord = read_csv('../input/pvis.csv')
+    result = "result.yaml"
+    xy_coord = read_csv('pvis.csv')
     with open(result) as file:
         data = yaml.safe_load(file)
 
-    obstacles = list(read_csv_from_dir('../input/obstacles'))
+    obstacles = list(read_csv_from_dir('obstacles'))
 
     fov = FieldView(obstacles=obstacles, fov=120)
 
