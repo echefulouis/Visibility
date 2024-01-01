@@ -75,6 +75,7 @@ def main():
 
     colors = ['r', 'g', 'b', 'cyan', 'brown']
     vizData = defaultdict(list)
+    VMAX = 5.0
     for i in range(data['NUM_ROBOTS']):
         name = f'robot{i+1}'
         indexes = data[name]
@@ -82,7 +83,7 @@ def main():
             robot = xy_coord[indexes[j-1], :2]
             goal = xy_coord[indexes[j], :2]
             color = colors[i]
-            path = interpolate_points_between(robot, goal, 5.0)
+            path = interpolate_points_between(robot, goal, VMAX)
             for k, g in enumerate(path):
                 if k == 0:
                     continue
