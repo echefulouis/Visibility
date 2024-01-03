@@ -1,2 +1,6 @@
 matplotlib
 shapely
+pyaml
+networkx
+scikit-learn
+tqdm

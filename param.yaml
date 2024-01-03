@@ -1,0 +1,19 @@
+num_robots: 4
+env_file_name: 'resources/input_file'
+initial_robot_states: [14, 5, 89, 40]
+target_states: [15, 25]
+number_trails: 2
+number_iterations: 200
+
+
+MTSP:
+  robot1: [ 0, 2, 14, 10, 12, 26, 29, 25, 27, 68, 71, 70, 72, 74, 67, 65, 66, 23, 18, 17, 15, 16 ]
+  robot2: [ 34, 32, 30, 31, 33, 69, 22, 20, 21, 24, 19, 7, 8, 5, 9, 6, 84, 81, 80, 82, 4 ]
+  robot3: [ 39, 35, 36, 38, 37, 51, 53, 50, 54, 52, 59, 56, 55, 57, 64, 79, 86, 85, 87, 89, 47, 49, 45, 48, 46 ]
+  robot4: [ 1, 83, 3, 11, 13, 28, 73, 41, 44, 40, 43, 42, 78, 88, 77, 75, 76, 63, 62, 60, 61, 58 ]
+
+DMC:
+  robot1: 'resources/MCR1.mat'
+  robot2: 'resources/MCR2.mat'
+  robot3: 'resources/MCR3.mat'
+  robot4: 'resources/MCR4.mat'

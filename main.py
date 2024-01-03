@@ -16,12 +16,12 @@ def read_csv_from_dir(dirname):
         yield ObstaclePolygon(xy[:, 0].tolist(),xy[:, 1].tolist())
 
 
-def display_animation(fov, obstacles, vizData):
-
+def display_animation(fov, obstacles, vizData, targets):
     simTime = max(map(len, vizData.values()))
     print(simTime)
     for t in range(simTime):
         plt.cla()
+        plt.plot(targets[:,0], targets[:,1], "ro")
         # display obstacles
         for ob in obstacles:
             ob.plot()
@@ -69,7 +69,7 @@ def main():
         data = yaml.safe_load(file)
 
     obstacles = list(read_csv_from_dir('obstacles'))
-
+    targets = np.array(data["Targets"])
     fov = FieldView(obstacles=obstacles, fov=120)
 
 
@@ -83,14 +83,15 @@ def main():
             robot = xy_coord[indexes[j-1], :2]
             goal = xy_coord[indexes[j], :2]
             color = colors[i]
-            path = interpolate_points_between(robot, goal, VMAX)
-            for k, g in enumerate(path):
-                if k == 0 or k == len(path) - 1:
-                    continue
-                p = path[k-1]
-                vizData[name].append({'robot': p, 'goal':g, 'color':color})
+            vizData[name].append({'robot': robot, 'goal': goal, 'color': color})
+            # path = interpolate_points_between(robot, goal, VMAX)
+            # for k, g in enumerate(path):
+            #     if k == 0 or k == len(path) - 1:
+            #         continue
+            #     p = path[k-1]
+            #     vizData[name].append({'robot': p, 'goal':g, 'color':color})
 
-    display_animation(fov, obstacles, vizData)
+    display_animation(fov, obstacles, vizData, targets)
 
 
 
