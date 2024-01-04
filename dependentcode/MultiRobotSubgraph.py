@@ -86,9 +86,9 @@ def draw_subgraph(division):
     index_mapping = {node: i for i, node in enumerate(SG.nodes())}
     new_nx_cords = [list(nx_coords[node]) for i, node in enumerate(division)]
     # print(new_nx_cords)
-    nx.draw(SG, new_nx_cords, with_labels=True)
+    # nx.draw(SG, new_nx_cords, with_labels=True)
     # I = nx.relabel_nodes(nx_graph, index_mapping, copy=True)
-    plt.show()
+    # plt.show()
     # Create Coord Matrix and Store in a file
     #get_adj_matrix(SG)
     #get_coord_matrix(new_nx_cords)

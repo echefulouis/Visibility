@@ -25,7 +25,7 @@ class Environment:
         self.boundary = []
         self.obstacles = []
         self.LineList,self.raw_data=self.load_environment(filename)
-        print(self.LineList)
+        # print(self.LineList)
         self.source = None
         self.dest = None
         self.point_x_cord = []
@@ -144,11 +144,11 @@ class Environment:
                 if (break_now is True):
                     break
             # Draw the vertical cell lines
-            if (lower_gone is False):
-                plt.plot([lower_obs_pt.x, pt.x], [lower_obs_pt.y, pt.y])
-
-            if (upper_gone is False):
-                plt.plot([pt.x, upper_obs_pt.x], [pt.y, upper_obs_pt.y])
+            # if (lower_gone is False):
+            #     plt.plot([lower_obs_pt.x, pt.x], [lower_obs_pt.y, pt.y])
+            #
+            # if (upper_gone is False):
+            #     plt.plot([pt.x, upper_obs_pt.x], [pt.y, upper_obs_pt.y])
 
             # Add to the global segment list
             if (lower_gone and upper_gone):
