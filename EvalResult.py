@@ -21,7 +21,7 @@ def eval(args):
         numCatchs = Counter([p.success for p in patrols.values()])[True]
         if numCatchs == args.num_targets:
             success += 1
-    print(f"detectionRate {100 * success/args.num_trials :.3f}, avgPathLen {pathLen/args.num_trials }")
+    print(f"detectionRate {100 * success/args.num_trials :.3f}, avgPathLen {pathLen/args.num_trials}:.3f")
 
 
 
